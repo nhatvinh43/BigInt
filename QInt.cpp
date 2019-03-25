@@ -1,4 +1,5 @@
-﻿#include "QInt.h"
+﻿
+#include "QInt.h"
 #include <iostream>
 
 using namespace std;
@@ -270,9 +271,9 @@ QInt::QInt(int kind, string str) //Hàm khởi tạo kiểu QInt với các hệ
 
 }
 
-QInt operator+( QInt  firstNum,  QInt  secondNum)
+QInt operator+(QInt  firstNum, QInt  secondNum)
 {
-	
+
 	string tempString1 = firstNum.getBitString(), tempString2 = secondNum.getBitString();
 	string result;
 	int n1 = tempString1.length(), n2 = tempString2.length();
@@ -298,7 +299,7 @@ QInt operator+( QInt  firstNum,  QInt  secondNum)
 		tempString1 = temp;
 	}
 	int carry = 0; // kh?i t?o
-	for (int i = startPos-1; i >= 0; i--)
+	for (int i = startPos - 1; i >= 0; i--)
 	{
 		int firstBit = tempString1.at(i) - '0';
 		int secondBit = tempString2.at(i) - '0';
@@ -404,7 +405,7 @@ string QInt::getBitString()
 {
 	string res;
 	bitset<32> bit;
-	int n = ((this->len) / 32)+1; //Xác định số phần tử trong mảng đã dùng
+	int n = ((this->len) / 32) + 1; //Xác định số phần tử trong mảng đã dùng
 	int totalBit = this->len;
 	int k = 3;
 	for (int i = 1; i <= n; i++)
@@ -415,7 +416,7 @@ string QInt::getBitString()
 		k--;
 		if (i == n) //Chuẩn hóa chuỗi bit tạm rồi mới đưa vào string trả về
 		{
-			binaryStringStandardize(temp, totalBit - (n-1)*32);
+			binaryStringStandardize(temp, totalBit - (n - 1) * 32);
 		}
 		res += temp;
 	}
@@ -482,13 +483,71 @@ string multiply(string num1, string num2)
 	if (i == -1)
 		return "0";
 
-	
+
 	string s = "";
 
 	while (i >= 0)
 		s += to_string(result[i--]);
 
 	return s;
+}
+
+string addBin(string number1, string number2)
+{
+	string result = ""; // khởi tạo result
+	int sum = 0, i = number1.size() - 1, j = number2.size() - 1;
+	while (i >= 0 || j >= 0 || sum == 1)
+	{
+		sum += ((i >= 0) ? number1[i] - '0' : 0);
+		sum += ((j >= 0) ? number2[j] - '0' : 0);
+
+		// nếu tổng là 1 hoặc 3 thì thêm 1 vào result
+		result = char(sum % 2 + '0') + result;
+
+		sum /= 2;
+		i--; j--;
+	}
+	return result;
+}
+
+string addDec(string number1, string number2)
+{
+
+	if (number1.length() > number2.length())
+		number1.swap(number2);
+
+	string result = ""; //khởi tạo chuỗi để lưu kết quả
+
+	int n1 = number1.length(), n2 = number2.length();
+
+	// đảo ngược 2 chuỗi
+	reverse(number1.begin(), number1.end());
+	reverse(number2.begin(), number2.end());
+
+	int carry = 0;
+	for (int i = 0; i<n1; i++)
+	{
+
+		int sum = ((number1[i] - '0') + (number2[i] - '0') + carry);
+		result.push_back(sum % 10 + '0');
+
+		carry = sum / 10;
+	}
+
+	// Thêm các chữ số còn lại của số lớn hơn
+	for (int i = n1; i<n2; i++)
+	{
+		int sum = ((number2[i] - '0') + carry);
+		result.push_back(sum % 10 + '0');
+		carry = sum / 10;
+	}
+
+	if (carry)
+		result.push_back(carry + '0');
+
+	reverse(result.begin(), result.end()); //chuỗi kết quả ngược
+
+	return result;
 }
 
 QInt operator* (QInt num1, QInt num2)
@@ -512,7 +571,7 @@ QInt operator* (QInt num1, QInt num2)
 		int carry = 0;
 		int n1 = str1[i] - '0';
 
-		nPos2 = 0;      
+		nPos2 = 0;
 		for (int j = n2 - 1; j >= 0; j--)
 		{
 			int n2 = str2[j] - '0';
@@ -553,8 +612,8 @@ QInt operator* (QInt num1, QInt num2)
 	{
 		s += to_string(result[i--]);
 	}
-	
-	return QInt (2, s);
+
+	return QInt(2, s);
 }
 
 string pow(string num, int exp)
@@ -569,6 +628,7 @@ string pow(string num, int exp)
 	return res;
 }
 
+
 void main()
 {
 	string a = "11";
@@ -578,19 +638,9 @@ void main()
 	bool sign = 0;
 	string binaryString("000001010101010");
 
-	//decimalToBinary(a,binaryString, sign);
-	//addToArr(arr, binaryString);
-	/*decimalToBinary(a, binaryString, sign);
-	cout << binaryString  << endl;
-	cout << reverseBinaryString(binaryString) << endl;*/
-	
 	QInt x(10, a);
 	QInt y(10, b);
 	QInt z(10, c);
-	/*cout << (x+y).getBitString() << endl;
-	cout << z.getBitString() << endl;*/
-	
-	//cout << (x*y).getBitString() << endl;
 	string n1 = "2";
 	cout << pow(n1, 128);
 }

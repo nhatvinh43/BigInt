@@ -1,4 +1,5 @@
-﻿#ifndef QInt_h
+﻿
+#ifndef QInt_h
 #define QInt_h
 #include <string>
 #include <math.h>
@@ -26,7 +27,7 @@ public:
 
 	//Các thao tác với dữ liệu bit trong số QInt
 	std::string getBitString(); //Chuyển các bit được lưu trữ trong mảng data thành chuỗi, chuẩn hóa nó(xóa bỏ những số 0 dư thừa)
-	
+
 
 	//Các thao tác xuất
 	std::string toBinary(); //return về mảng nhị phân (thứ tự đúng) của số được lưu trong data
@@ -41,17 +42,19 @@ public:
 	friend std::istream& operator >> (std::istream& os, QInt&);
 
 	//Các hàm bạn thao tác với dữ liệu trong class
-	friend QInt operator+ ( QInt  firstNum,  QInt  secondNum);
+	friend QInt operator+ (QInt  firstNum, QInt  secondNum);
 	friend QInt operator* (QInt number1, QInt number2); //Nhân 2 số dạng nhị phân
 	friend std::string multiply(std::string num1, std::string num2);// Nhân 2 số dạng thập phân
 	friend std::string addition(std::string number1, std::string number2); //Hàm cộng 2 số thập phân
+	friend std::string addBin(std::string number1, std::string number2); //cộng 2 số nhị phân
+	friend std::string addDec(std::string number1, std::string number2);//cộng 2 số nhị phân
 	friend std::string pow(std::string num, int exp); //Số mũ
 
 	friend int divideBy2(std::string&, bool&);//Hàm chia số thập phân cho 2 (chia 1 lần)
 	friend void decimalToBinary(std::string, std::string& binaryString, bool&);//Hàm chuyển thập phân về nhị phân (chia 2 nhiều lần)
 
 	friend std::string binaryToDecimal(std::string); //Chuyển từ nhị phân sang thập phân
-	
+
 
 	friend std::string reverseBinaryString(std::string binaryString);// Trả về 1 chuỗi nhị phân là bù 1 của số hiện hành
 
