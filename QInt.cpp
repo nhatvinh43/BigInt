@@ -20,6 +20,7 @@ QInt::~QInt()
 {
 	this->sign = this->len = 0;
 }
+
 QInt QInt:: operator= (QInt number)
 {
 	QInt temp;
@@ -133,12 +134,12 @@ string binaryToSecondComplement(string binaryString)
 string binaryToDecimal(string binaryString)
 {
 	int n = binaryString.length();
-	bool sign=0;
+	bool sign = 0;
 	if (binaryString.at(0) == '1')
 	{
 		sign = 1;
 	}
-	string positivePart="0"; //Chuỗi tổng các số phần dương
+	string positivePart = "0"; //Chuỗi tổng các số phần dương
 	string negativePart;//Chuỗi phần âm
 	int k = 0; //vị trí số mũ
 	for (int i = n - 1; i >= 0; i--)
@@ -150,9 +151,9 @@ string binaryToDecimal(string binaryString)
 		}
 		if (binaryString.at(i) == '1')
 		{
-			positivePart = addDec(positivePart,pow("2", k));
+			positivePart = addDec(positivePart, pow("2", k));
 		}
-		
+
 		k++;
 	}
 	if (sign == 0)
@@ -161,7 +162,7 @@ string binaryToDecimal(string binaryString)
 	}
 	else
 	{
-		string res="-";
+		string res = "-";
 		res += diff(negativePart, positivePart);
 		return res;
 	}
@@ -313,13 +314,25 @@ QInt::QInt(int kind, string str) //Hàm khởi tạo kiểu QInt với các hệ
 
 }
 
-QInt operator+( QInt  firstNum,  QInt  secondNum)
+QInt operator+(QInt  firstNum, QInt  secondNum)
 {
-	
+
 	string str1 = firstNum.getBitString();
 	string str2 = secondNum.getBitString();
 	string res = addBin(str1, str2);
-	return QInt(2,res);
+	return QInt(2, res);
+}
+
+QInt operator-(QInt &first,QInt &second)
+{
+	return first + (~second + QInt(10, "1"));
+}
+
+QInt operator~(const QInt & index)
+{
+	QInt result;
+	result.bit = ~index.bit;
+	return QInt(result);
 }
 
 string addBin(string number1, string number2)
@@ -475,7 +488,7 @@ string QInt::getBitString()
 {
 	string res;
 	bitset<32> bit;
-	int n = ((this->len) / 32)+1; //Xác định số phần tử trong mảng đã dùng
+	int n = ((this->len) / 32) + 1; //Xác định số phần tử trong mảng đã dùng
 	int totalBit = this->len;
 	int k = 3;
 	for (int i = 1; i <= n; i++)
@@ -486,7 +499,7 @@ string QInt::getBitString()
 		k--;
 		if (i == n) //Chuẩn hóa chuỗi bit tạm rồi mới đưa vào string trả về
 		{
-			binaryStringStandardize(temp, totalBit - (n-1)*32);
+			binaryStringStandardize(temp, totalBit - (n - 1) * 32);
 		}
 		res += temp;
 	}
@@ -553,7 +566,7 @@ string multiply(string num1, string num2)
 	if (i == -1)
 		return "0";
 
-	
+
 	string s = "";
 
 	while (i >= 0)
@@ -626,7 +639,7 @@ string diff(string num1, string num2)
 	{
 		// Do school mathematics, compute difference of 
 		// current digits and carry 
-		int sub = ((num1[i + diff] - '0') -(num2[i] - '0') - carry);
+		int sub = ((num1[i + diff] - '0') - (num2[i] - '0') - carry);
 		if (sub < 0)
 		{
 			sub = sub + 10;
@@ -683,7 +696,7 @@ string shiftRight(string number)
 	int n = number.length();
 	char bitSign = number.at(0);
 	res += bitSign;
-	res+=number.substr(0,n-1);
+	res += number.substr(0, n - 1);
 	return res;
 }
 QInt QInt:: operator >> (int number)
@@ -727,14 +740,14 @@ void main()
 	//decimalToBinary(a,binaryString, sign);
 	//addToArr(arr, binaryString);
 	//cout << binaryString  << endl;
-	
+
 	QInt x(10, a);
 	QInt y(10, b);
 	QInt z(10, c);
 	//cout << x.getBitString() << endl;
 	/*cout << (x+y).getBitString() << endl;
 	cout << z.getBitString() << endl;*/
-	
+
 	//cout << (x*y).getBitString() << endl;
 	/*cout << x.toBinary() << endl;
 	cout << x.toDecimal() << endl;
@@ -743,4 +756,6 @@ void main()
 	cout << x.getBitString() << endl;
 	cout << (x << 2).getBitString() << endl;
 	cout << x.getBitString() << endl;
+
+	system("pause");
 }

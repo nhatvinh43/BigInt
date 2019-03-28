@@ -16,6 +16,8 @@ private:
 	int len = 0; //biến này để lưu trữ độ dài thực sự của chuỗi bit (không có dãy số 00000 ở đầu), dùng để chuẩn hóa chuỗi
 	bool sign; //biến lưu trữ dấu
 public:
+	QIntBitset bit;
+public:
 	//Phuong thuc khoi tao va huy
 	QInt();
 	QInt(string Number);
@@ -26,7 +28,7 @@ public:
 
 	//Các thao tác với dữ liệu bit trong số QInt
 	string getBitString(); //Chuyển các bit được lưu trữ trong mảng data thành chuỗi, chuẩn hóa nó(xóa bỏ những số 0 dư thừa)
-	
+
 
 	//Các thao tác xuất
 	string toBinary(); //return về mảng nhị phân (thứ tự đúng) của số được lưu trong data
@@ -34,17 +36,17 @@ public:
 	string toHex();//về hệ 16
 
 	//Cac toan tu
-	friend QInt operator - (QInt number1, QInt number2);
+	friend QInt operator - (QInt &number1, QInt &number2);
 	friend QInt operator / (QInt number1, QInt number2);
 	friend QInt operator+ (QInt  firstNum, QInt  secondNum);
 	friend QInt operator* (QInt number1, QInt number2); //Nhân 2 số dạng nhị phân
 	QInt operator << (int number);
 	QInt operator >> (int number);
 	QInt operator= (QInt number);
-	
+	friend QInt operator~(const QInt & index);
+
 	//Các hàm bạn thao tác với dữ liệu trong class
-	
-	
+
 };
 
 string multiply(string num1, string num2);// Nhân 2 số dạng thập phân, phục vụ cho việc chuyển từ nhị phân sang thập phân
