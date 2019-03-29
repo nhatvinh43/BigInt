@@ -67,4 +67,8 @@ string diff(string num1, string num2); // Khoảng cách giữa 2 số (chỉ d�
 string shiftLeft(string num);//Dịch trái 1 lần
 string shiftRight(string num);//Dịch phải 1 lần (số học)
 
+//string addBitStrings(string first, string second);
+int makeEqualLength(string &str1, string &str2); //hàm làm chiều dài 2 dãy bằng nhau
+
+
 #endif

@@ -323,7 +323,7 @@ QInt operator+(QInt  firstNum, QInt  secondNum)
 	return QInt(2, res);
 }
 
-QInt operator-(QInt &first,QInt &second)
+QInt operator-(QInt &first, QInt &second)
 {
 	return first + (~second + QInt(10, "1"));
 }
@@ -335,23 +335,55 @@ QInt operator~(const QInt & index)
 	return QInt(result);
 }
 
-string addBin(string number1, string number2)
+
+int makeEqualLength(string &str1, string &str2)
 {
-	string result = ""; // khởi tạo result
-	int sum = 0, i = number1.size() - 1, j = number2.size() - 1;
-	while (i >= 0 || j >= 0 || sum == 1)
+	int len1 = str1.size();
+	int len2 = str2.size();
+	if (len1 < len2)
 	{
-		sum += ((i >= 0) ? number1[i] - '0' : 0);
-		sum += ((j >= 0) ? number2[j] - '0' : 0);
-
-		// nếu tổng là 1 hoặc 3 thì thêm 1 vào result
-		result = char(sum % 2 + '0') + result;
-
-		sum /= 2;
-		i--; j--;
+		for (int i = 0; i < len2 - len1; i++)
+			str1 = '0' + str1;
+		return len2;
 	}
+	else if (len1 > len2)
+	{
+		for (int i = 0; i < len1 - len2; i++)
+			str2 = '0' + str2;
+	}
+	return len1; // nếu len1 >= len2 
+}
+
+
+string addBin(string firstNum, string secondNum)
+{
+	string result;  // dể lưu các bits tổng
+	int length = makeEqualLength(firstNum, secondNum);//tạo độ dài giống nhau trước khi thêm vô
+
+	int carry = 0;  // khởi tạo carry 
+
+	// Thêm từng bit 1 
+	for (int i = length - 1; i >= 0; i--)
+	{
+		int firstBit = firstNum.at(i) - '0';
+		int secondBit = secondNum.at(i) - '0';
+
+		// bool co tổng 3 bit
+		int sum = (firstBit ^ secondBit ^ carry) + '0';
+
+		result = (char)sum + result;
+
+		// biểu thức boolean cho phép cộng 3 bit
+		carry = (firstBit & secondBit) | (secondBit & carry) | (firstBit & carry);
+	}
+
+	// nếu tràn thì cộng "1" vô đầu result
+	if (carry)
+		result = '1' + result;
+
 	return result;
 }
+
 
 string addDec(string number1, string number2)
 {
@@ -360,9 +392,7 @@ string addDec(string number1, string number2)
 		number1.swap(number2);
 
 	string result = ""; //khởi tạo chuỗi để lưu kết quả
-
 	int n1 = number1.length(), n2 = number2.length();
-
 	// đảo ngược 2 chuỗi
 	reverse(number1.begin(), number1.end());
 	reverse(number2.begin(), number2.end());
@@ -730,8 +760,8 @@ QInt QInt:: operator << (int number)
 
 void main()
 {
-	string a = "-100";
-	string b = "-2";
+	string a = "-120";
+	string b = "-5";
 	string c = "3675";
 	int arr[4] = { 0 };
 	bool sign = 0;
@@ -745,17 +775,17 @@ void main()
 	QInt y(10, b);
 	QInt z(10, c);
 	//cout << x.getBitString() << endl;
-	/*cout << (x+y).getBitString() << endl;
-	cout << z.getBitString() << endl;*/
+	cout << (x+y).getBitString() << endl;
+	//cout << z.getBitString() << endl;
 
 	//cout << (x*y).getBitString() << endl;
 	/*cout << x.toBinary() << endl;
 	cout << x.toDecimal() << endl;
 	cout << x.toHex() << endl;*/
 
-	cout << x.getBitString() << endl;
+	/*cout << x.getBitString() << endl;
 	cout << (x << 2).getBitString() << endl;
-	cout << x.getBitString() << endl;
+	cout << x.getBitString() << endl;*/
 
 	system("pause");
 }
