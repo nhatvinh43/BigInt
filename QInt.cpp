@@ -342,16 +342,28 @@ int makeEqualLength(string &str1, string &str2)
 	int len2 = str2.size();
 	if (len1 < len2)
 	{
-		for (int i = 0; i < len2 - len1; i++)
-			str1 = '0' + str1;
+		for (int i = 0; i < len2 - len1; i++){
+			if (str1[0] = '0'){
+				str1 = '0' + str1;
+			}
+			else{
+				str1 = '1' + str1;
+			}
+		}
 		return len2;
 	}
 	else if (len1 > len2)
 	{
-		for (int i = 0; i < len1 - len2; i++)
-			str2 = '0' + str2;
+		for (int i = 0; i < len1 - len2; i++){
+			if (str2[0] = '0'){
+				str2 = '0' + str2;
+			}
+			else{
+				str2 = '1' + str2;
+			}
+		}
+		return len1; // nếu len1 >= len2 
 	}
-	return len1; // nếu len1 >= len2 
 }
 
 
@@ -379,8 +391,12 @@ string addBin(string firstNum, string secondNum)
 
 	// nếu tràn thì cộng "1" vô đầu result
 	if (carry)
-		result = '1' + result;
-
+	{
+		if (result[0] = '0'){
+			result = '0' + result;
+		}
+		else result = '1' + result;
+	}
 	return result;
 }
 
@@ -760,8 +776,8 @@ QInt QInt:: operator << (int number)
 
 void main()
 {
-	string a = "-120";
-	string b = "-5";
+	string a = "-130";
+	string b = "5";
 	string c = "3675";
 	int arr[4] = { 0 };
 	bool sign = 0;
