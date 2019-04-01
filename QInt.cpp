@@ -1,4 +1,4 @@
-﻿#include "QInt.h"
+#include "QInt.h"
 #include <iostream>
 
 using namespace std;
@@ -20,7 +20,6 @@ QInt::~QInt()
 {
 	this->sign = this->len = 0;
 }
-
 QInt QInt:: operator= (QInt number)
 {
 	QInt temp;
@@ -95,7 +94,6 @@ int divideBy2(string& a, bool& sign)
 		newString = newString + (char)((tempString / 2) + 48);
 		tempString = tempString - (tempString / 2) * 2;
 		if (i < len - 1)
-
 		{
 			tempString = tempString * 10 + (a[i + 1] - 48);
 		}
@@ -112,11 +110,17 @@ void decimalToBinary(string a, string& binaryString, bool& sign)
 	binaryString += (char)(divideBy2(a, sign) + 48);
 	if (a == "0")
 	{
+
 		binaryString += "0";
+		if (binaryString == "00")
+		{
+			binaryString = "0";
+		}
 		reverse(binaryString.begin(), binaryString.end());
 		if (sign == 1)
 		{
 			binaryString = binaryToSecondComplement(binaryString);
+
 			return;
 		}
 		return;
@@ -126,6 +130,10 @@ void decimalToBinary(string a, string& binaryString, bool& sign)
 
 string binaryToSecondComplement(string binaryString)
 {
+	if (binaryString == "0")
+	{
+		return "0";
+	}
 	int n = binaryString.length();
 	binaryString = reverseBinaryString(binaryString);
 	string res = addBin(binaryString, "1");
@@ -133,13 +141,14 @@ string binaryToSecondComplement(string binaryString)
 }
 string binaryToDecimal(string binaryString)
 {
+
 	int n = binaryString.length();
-	bool sign = 0;
+	bool sign=0;
 	if (binaryString.at(0) == '1')
 	{
 		sign = 1;
 	}
-	string positivePart = "0"; //Chuỗi tổng các số phần dương
+	string positivePart="0"; //Chuỗi tổng các số phần dương
 	string negativePart;//Chuỗi phần âm
 	int k = 0; //vị trí số mũ
 	for (int i = n - 1; i >= 0; i--)
@@ -151,9 +160,9 @@ string binaryToDecimal(string binaryString)
 		}
 		if (binaryString.at(i) == '1')
 		{
-			positivePart = addDec(positivePart, pow("2", k));
+			positivePart = addDec(positivePart,pow("2", k));
 		}
-
+		
 		k++;
 	}
 	if (sign == 0)
@@ -162,7 +171,7 @@ string binaryToDecimal(string binaryString)
 	}
 	else
 	{
-		string res = "-";
+		string res="-";
 		res += diff(negativePart, positivePart);
 		return res;
 	}
@@ -257,15 +266,13 @@ QInt::QInt(int kind, string str) //Hàm khởi tạo kiểu QInt với các hệ
 	}
 	if (kind == 10)  //Nếu chuỗi là chuỗi thập phân
 	{
+		
 		decimalToBinary(str, binaryString, this->sign);  //Chuyển về chuỗi nhị phân thứ tự đúng (dạng bù 2)
 		if (binaryString.at(0) == '1')
 		{
-			this->sign = 0;
+			this->sign = 1;
 		}
-		else
-		{
-			this->sign = 0;
-		}
+		else this->sign = 0;
 		this->len = binaryString.length();
 	}
 	if (kind == 16) //Nếu chuỗi là chuỗi hệ 16
@@ -273,7 +280,7 @@ QInt::QInt(int kind, string str) //Hàm khởi tạo kiểu QInt với các hệ
 		binaryString = hexToBinary(str);
 		if (binaryString.at(0) == '1')
 		{
-			this->sign = 0;
+			this->sign = 1;
 		}
 		else
 		{
@@ -286,8 +293,9 @@ QInt::QInt(int kind, string str) //Hàm khởi tạo kiểu QInt với các hệ
 	{
 		this->data[i] = (this->data[i] & 0);
 	}
-	int k = this->len - 1;
-
+	int k =binaryString.length()-1;
+	int shiftCount = 0; //Biến lưu số bit cần dịch, reset lại =0 mỗi khi qua ô mới
+	int temp=3;
 	for (int i = 0; i < this->len; i++)
 	{
 		int bitPosition;
@@ -307,32 +315,39 @@ QInt::QInt(int kind, string str) //Hàm khởi tạo kiểu QInt với các hệ
 		{
 			bitPosition = 0;
 		}
-		this->data[bitPosition] = this->data[bitPosition] | ((int)(binaryString[k] - 48) << i);
+		
+		this->data[bitPosition] = this->data[bitPosition] | ((int)(binaryString[k] - 48) << shiftCount);
 
+		shiftCount++;
 		k--;
 	}
-
+	
 }
 
-QInt operator+(QInt  firstNum, QInt  secondNum)
+QInt operator+( QInt  firstNum,  QInt  secondNum)
 {
-
-	string str1 = firstNum.getBitString();
-	string str2 = secondNum.getBitString();
-	string res = addBin(str1, str2);
-	return QInt(2, res);
-}
-
-QInt operator-(QInt &first, QInt &second)
-{
-	return first + (~second + QInt(10, "1"));
-}
-
-QInt operator~(const QInt & index)
-{
-	QInt result;
-	result.bit = ~index.bit;
-	return QInt(result);
+	string result = "";
+	string n1 = firstNum.toDecimal(), n2 = secondNum.toDecimal();
+	int x = n1.find_first_of('-'), y = n2.find_first_of('-');
+	char sign1 = n1.at(0), sign2 = n2.at(0);
+	if (sign1 != '-' && sign2 != '-'){  //Hai số dương thì cộng bình thường
+		result = addDec(n1, n2);
+	}
+	if (n1.find_first_not_of('-') == 0 && y == 0){  // Số đầu dương, số thứ 2 âm
+		string n2_ = n2.erase(0, 1);
+		result = Subtraction(n1, n2_);
+	}
+	else if (x == 0 && y == -1) //Số 1 âm, số 2 dương
+	{
+		result = Subtraction(n2, n1.erase(0, 1));
+	}
+	else if (x == 0 && y == 0)
+	{
+		string n1New = n1.erase(0, 1);
+		string n2New = n2.erase(0, 1);
+		result = '-' + addDec(n1New, n2New);
+	}
+	return QInt(10, result);
 }
 
 
@@ -343,63 +358,76 @@ int makeEqualLength(string &str1, string &str2)
 	if (len1 < len2)
 	{
 		for (int i = 0; i < len2 - len1; i++){
-			if (str1[0] = '0'){
-				str1 = '0' + str1;
-			}
-			else{
-				str1 = '1' + str1;
-			}
+			str1 = '0' + str1;
 		}
 		return len2;
 	}
 	else if (len1 > len2)
 	{
 		for (int i = 0; i < len1 - len2; i++){
-			if (str2[0] = '0'){
 				str2 = '0' + str2;
-			}
-			else{
-				str2 = '1' + str2;
-			}
 		}
-		return len1; // nếu len1 >= len2 
+		return len1; // n?u len1 >= len2 
 	}
 }
 
-
-string addBin(string firstNum, string secondNum)
+string Subtraction(string a, string b)
 {
-	string result;  // dể lưu các bits tổng
-	int length = makeEqualLength(firstNum, secondNum);//tạo độ dài giống nhau trước khi thêm vô
-
-	int carry = 0;  // khởi tạo carry 
-
-	// Thêm từng bit 1 
-	for (int i = length - 1; i >= 0; i--)
+	string result = "";
+	while (a.length() < b.length())
+		a = '0' + a;
+	while (b.length() < a.length())
+		b = '0' + b;
+	bool neg = false;
+	if (a<b)
 	{
-		int firstBit = firstNum.at(i) - '0';
-		int secondBit = secondNum.at(i) - '0';
-
-		// bool co tổng 3 bit
-		int sum = (firstBit ^ secondBit ^ carry) + '0';
-
-		result = (char)sum + result;
-
-		// biểu thức boolean cho phép cộng 3 bit
-		carry = (firstBit & secondBit) | (secondBit & carry) | (firstBit & carry);
+		swap(a, b);
+		neg = true;
 	}
-
-	// nếu tràn thì cộng "1" vô đầu result
-	if (carry)
+	int borrow = 0;
+	for (int i = a.length() - 1; i >= 0; i--)
 	{
-		if (result[0] = '0'){
-			result = '0' + result;
+		int x = a[i] - b[i] - borrow;
+		if (x<0)
+		{
+			x += 10;
+			borrow = 1;
 		}
-		else result = '1' + result;
+		else borrow = 0;
+		result = (char)(x % 10 + 48) + result;
 	}
+	while (result.length()>1 && result[0] == '0') result.erase(0, 1);
+	if (neg) result = "-" + result;
 	return result;
 }
 
+string addBin( string firstNum,  string secondNum)
+{
+	string result = ""; // Initialize result 
+	int s = 0;          // Initialize digit sum 
+
+	// Travers both strings starting from last 
+	// characters 
+	int i = firstNum.size() - 1, j = secondNum.size() - 1;
+	while (i >= 0 || j >= 0 || s == 1)
+	{
+		// Comput sum of last digits and carry 
+		s += ((i >= 0) ? firstNum[i] - '0' : 0);
+		s += ((j >= 0) ? secondNum[j] - '0' : 0);
+
+		// If current digit sum is 1 or 3, add 1 to result 
+		result = char(s % 2 + '0') + result;
+
+		// Compute carry 
+		s /= 2;
+
+		// Move to next digits 
+		i--; j--;
+	}
+	
+	return result;
+
+}
 
 string addDec(string number1, string number2)
 {
@@ -408,7 +436,9 @@ string addDec(string number1, string number2)
 		number1.swap(number2);
 
 	string result = ""; //khởi tạo chuỗi để lưu kết quả
+
 	int n1 = number1.length(), n2 = number2.length();
+
 	// đảo ngược 2 chuỗi
 	reverse(number1.begin(), number1.end());
 	reverse(number2.begin(), number2.end());
@@ -530,11 +560,15 @@ void binaryStringStandardize(string& number, int len)
 	number = res;
 }
 
-string QInt::getBitString()
+string QInt::getBitString() const
 {
 	string res;
 	bitset<32> bit;
-	int n = ((this->len) / 32) + 1; //Xác định số phần tử trong mảng đã dùng
+	int n = ((this->len) / 32)+1; //Xác định số phần tử trong mảng đã dùng
+	if (this->len % 32 == 0)
+	{
+		n = this->len / 32;
+	}
 	int totalBit = this->len;
 	int k = 3;
 	for (int i = 1; i <= n; i++)
@@ -545,9 +579,9 @@ string QInt::getBitString()
 		k--;
 		if (i == n) //Chuẩn hóa chuỗi bit tạm rồi mới đưa vào string trả về
 		{
-			binaryStringStandardize(temp, totalBit - (n - 1) * 32);
+			binaryStringStandardize(temp, totalBit - (n-1)*32);
 		}
-		res += temp;
+		res = temp + res;
 	}
 	return res;
 }
@@ -612,7 +646,7 @@ string multiply(string num1, string num2)
 	if (i == -1)
 		return "0";
 
-
+	
 	string s = "";
 
 	while (i >= 0)
@@ -625,6 +659,7 @@ string pow(string num, int exp)
 {
 	string res;
 	string temp = "1";
+	res = temp;
 	for (int i = 1; i <= exp; i++)
 	{
 		temp = multiply(num, temp);
@@ -685,7 +720,7 @@ string diff(string num1, string num2)
 	{
 		// Do school mathematics, compute difference of 
 		// current digits and carry 
-		int sub = ((num1[i + diff] - '0') - (num2[i] - '0') - carry);
+		int sub = ((num1[i + diff] - '0') -(num2[i] - '0') - carry);
 		if (sub < 0)
 		{
 			sub = sub + 10;
@@ -742,7 +777,7 @@ string shiftRight(string number)
 	int n = number.length();
 	char bitSign = number.at(0);
 	res += bitSign;
-	res += number.substr(0, n - 1);
+	res+=number.substr(0,n-1);
 	return res;
 }
 QInt QInt:: operator >> (int number)
@@ -773,35 +808,206 @@ QInt QInt:: operator << (int number)
 	QInt temp(2, res);
 	return temp;
 }
+QInt QInt::operator~()
+{
+	string res = this->getBitString();
+	res = reverseBinaryString(res);
+	return QInt(2, res);
+}
+QInt operator- (QInt num1, QInt num2)
+{
+	string res = num2.getBitString();
+	res = binaryToSecondComplement(res);
+	QInt temp(2, res);
+	return (num1 + temp);
+}
+int QInt::compare(QInt number)
+{
+	string temp1 = this->toDecimal();
+	string temp2 = number.toDecimal();
+	int signCheck = 0;
+	if (this->sign == 0 && number.sign == 1)
+	{
+		return 1;
+	}
+	if (this->sign == 1 && number.sign == 0)
+	{
+		return -1;
+	}
+	if (this->sign == 1 && number.sign == 1)
+	{
+		temp1.erase(temp1.begin());
+		temp2.erase(temp2.begin());
+		signCheck = 1;
+	}
+	int n1 = this->getBitString().length();
+	int n2 = number.getBitString().length();
+	if (n1 < n2)
+	{
+		if (signCheck == 1)
+		{
+			return 1;
+		}
+		else
+			return -1;
+	}
+	else if (n1>n2)
+	{
+		if (signCheck == 1)
+		{
+			return -1;
+		}
+		else return 1;
+	}
+	else if (n1 == n2)
+	{
+		if (signCheck == 1)
+		{
+			if (temp1 < temp2)
+			{
+				return 1;
+			}
+			else if (temp1>temp2)
+			{
+				return -1;
+			}
+			else if (temp1 == temp2)
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			return temp1.compare(temp2);
+		}
+	}
+}
+QInt QInt::ror()
+{
+	string res = this->getBitString();
+	int len = res.length();
+	char c = res.at(len - 1);
+	res.pop_back();
+	res = c + res;
+	return QInt(2, res);
+}
+QInt QInt::rol()
+{
+	string res = this->getBitString();
+	int len = res.length();
+	char c = res.at(0);
+	res.erase(res.begin());
+	res = res + c;
+	return QInt(2, res);
+}
+QInt QInt::operator |(QInt number)
+{
+	string binaryString1 = this->getBitString();
+	string binaryString2 = number.getBitString();
 
+	QInt temp;
+	int len = makeEqualLength(binaryString1, binaryString2);
+
+
+	for (int i = 3; i >= 0; i--)
+	{
+		temp.data[i] = this->data[i] | number.data[i];
+	}
+	temp.len = len;
+	if (temp.getBitString().at(0) == '1')
+	{
+		temp.sign = 1;
+	}
+	else temp.sign = 0;
+	return temp;
+}
+
+QInt QInt::operator & (QInt number)
+{
+	string binaryString1 = this->getBitString();
+	string binaryString2 = number.getBitString();
+
+	QInt temp;
+	int len = makeEqualLength(binaryString1, binaryString2);
+
+
+	for (int i = 3; i >= 0; i--)
+	{
+		temp.data[i] = this->data[i] & number.data[i];
+	}
+	temp.len = len;
+	if (temp.getBitString().at(0) == '1')
+	{
+		temp.sign = 1;
+	}
+	else temp.sign = 0;
+	return temp;
+}
+
+QInt QInt::operator ^ (QInt number)
+{
+	string binaryString1 = this->getBitString();
+	string binaryString2 = number.getBitString();
+
+	QInt temp;
+	int len = makeEqualLength(binaryString1, binaryString2);
+
+
+	for (int i = 3; i >= 0; i--)
+	{
+		temp.data[i] = this->data[i] ^ number.data[i];
+	}
+	temp.len = len;
+	if (temp.getBitString().at(0) == '1')
+	{
+		temp.sign = 1;
+	}
+	else temp.sign = 0;
+	return temp;
+}
+QInt operator* (QInt number1, QInt number2)
+{
+	string n1Dec = number1.toDecimal();
+	string n2Dec = number2.toDecimal();
+	if (n1Dec == "0" || n2Dec == "0")
+	{
+		return QInt(2, "0");
+	}
+	if (n1Dec == "1")
+	{
+		return QInt(10, n2Dec);
+	}
+	if (n2Dec == "1")
+	{
+		return QInt(10, n2Dec);
+	}
+
+
+
+}
 void main()
 {
-	string a = "-130";
-	string b = "5";
-	string c = "3675";
+	string a = "0";
+	string b = "0";
+	string c = "0";
 	int arr[4] = { 0 };
 	bool sign = 0;
-	string binaryString("101001010101010111");
+	string binaryString;
 
-	//decimalToBinary(a,binaryString, sign);
-	//addToArr(arr, binaryString);
-	//cout << binaryString  << endl;
-
+	
+	
 	QInt x(10, a);
 	QInt y(10, b);
 	QInt z(10, c);
-	//cout << x.getBitString() << endl;
-	cout << (x+y).getBitString() << endl;
-	//cout << z.getBitString() << endl;
-
+	QInt xx(10, "998");
+	
+	cout << z.getBitString() << endl;
+	
+//	cout << (x.rol()).getBitString() << endl;
+	cout << (x - y).toDecimal() << endl;
+	/*cout << z.getBitString() << endl;*/
 	//cout << (x*y).getBitString() << endl;
 	/*cout << x.toBinary() << endl;
 	cout << x.toDecimal() << endl;
 	cout << x.toHex() << endl;*/
-
-	/*cout << x.getBitString() << endl;
-	cout << (x << 2).getBitString() << endl;
-	cout << x.getBitString() << endl;*/
-
-	system("pause");
 }
